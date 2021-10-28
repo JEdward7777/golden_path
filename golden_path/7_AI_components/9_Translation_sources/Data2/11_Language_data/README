@@ -1,0 +1,14 @@
+ Corpus Name: bible-uedin
+     Package: bible-uedin/v1/raw/el
+     Website: http://opus.nlpl.eu/bible-uedin-v1.php
+     Release: v1
+Release date: Fri Aug  9 10:47:18 EEST 2019
+     License: CC0 1.0
+
+This corpus is part of OPUS - the open collection of parallel corpora
+OPUS Website: http://opus.nlpl.eu
+
+Please cite OPUS and A massively parallel corpus: the Bible in 100 languages, Christos Christodoulopoulos and Mark Steedman, *Language Resources and Evaluation*, 49 (2)
+
+This is a multilingual parallel corpus created from translations of the Bible compiled by Christos Christodoulopoulos and Mark Steedman.
+License: CC0 1.0
