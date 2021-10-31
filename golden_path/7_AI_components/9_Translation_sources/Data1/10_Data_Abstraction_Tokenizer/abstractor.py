@@ -8,7 +8,9 @@
 
 import xml.etree.ElementTree as ET
 import functools
-import os,re
+import os,re,json
+from tokenizers import CharBPETokenizer
+from tokenizers import Tokenizer
 
 datafile = "../11_Language_data/Hebrew.xml"
  
@@ -89,6 +91,18 @@ book_name_lookup = {
 This gets the verse from this data source.  It returns untokenized scripture reference for the tokenizer to tokenize.
 """
 def getVerse( reference: str ) -> str:
+    reference_str = translate_reference( reference )
+    verses = load_verses()
+    return verses[ reference_str ] if reference_str in verses else None
+
+
+def getVerse_tokenized( reference: str ) -> str:
+    reference_str = translate_reference( reference )
+    verses_tokenized_str = train_tokenization()
+    return verses_tokenized_str[reference_str]
+
+
+def translate_reference( reference: str ) -> str:
     reference_match = reference_regex.match( reference )
     if not reference_match: return None
     book = reference_match["book"]
@@ -97,8 +111,8 @@ def getVerse( reference: str ) -> str:
     verse = reference_match["verse"]
     book = book_name_lookup[book]
     reference_str = "b." + book + "." + chapter + "." + verse
-    verses = load_verses()
-    return verses[ reference_str ] if reference_str in verses else None
+    return reference_str
+
 
 def load_xml():
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -121,4 +135,56 @@ def load_verses():
     return verses
 
 
-if __name__ == '__main__': print( getVerse( "John 3:16") )
+@functools.lru_cache(maxsize=None)
+def train_tokenization():
+    #first dump the verses to a file to train on.
+    current_folder = os.path.dirname(os.path.abspath(__file__))
+    dump_file = os.path.join( current_folder, "pre_tokenizer_dump.txt")
+    tokenizer_file = os.path.join( current_folder, "bpeTokenizer.json")
+    tokenized_verses_file = os.path.join( current_folder, "tokenized.json")
+
+    if not os.path.exists(dump_file):
+        verses = load_verses()
+        with open( dump_file, "wt" ) as f:
+            for verse in verses.values():
+                f.write( verse + "\n" )
+    else:
+        verses = None
+
+    #now execute the training useing the dump file.
+    #https://github.com/huggingface/tokenizers/tree/master/bindings/python
+    if not os.path.exists( tokenizer_file ):
+        tokenizer = CharBPETokenizer()
+        tokenizer.train( [dump_file] )
+        tokenizer.save( tokenizer_file )
+    else:
+        tokenizer = None
+
+    #now do the tokenization
+    if not os.path.exists( tokenized_verses_file ):
+        if not verses: verses = load_verses()
+        if not tokenizer: tokenizer = Tokenizer.from_file( tokenizer_file )
+        verses_tokenized = {}
+        for key,value in verses.items():
+            verse_tokenized = tokenizer.encode( value )
+            verses_tokenized[key] = (verse_tokenized.tokens, verse_tokenized.ids)
+
+        with open( tokenized_verses_file, "wt" ) as f:
+            #verses_tokenized_json = json.dumps(verses_tokenized,ensure_ascii=False)
+            #f.write( verses_tokenized_json )
+            json.dump(verses_tokenized,f,ensure_ascii=False)
+    else:
+        with open( tokenized_verses_file, "rt" ) as f:
+            verses_tokenized = json.load( f )
+
+    return verses_tokenized
+    
+
+
+
+
+
+#if __name__ == '__main__': print( getVerse( "John 3:16") )
+#if __name__ == '__main__': train_tokenization()
+
+if __name__ == '__main__': print( getVerse_tokenized( "John 3:16") )
