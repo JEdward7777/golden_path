@@ -155,7 +155,7 @@ def train_tokenization():
     #https://github.com/huggingface/tokenizers/tree/master/bindings/python
     if not os.path.exists( tokenizer_file ):
         tokenizer = CharBPETokenizer()
-        tokenizer.train( [dump_file] )
+        tokenizer.train( [dump_file], vocab_size=9717 )
         tokenizer.save( tokenizer_file )
     else:
         tokenizer = None
