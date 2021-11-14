@@ -12,7 +12,6 @@ import os,re,json
 from tokenizers import CharBPETokenizer
 from tokenizers import Tokenizer
 
-datafile = "../11_Language_data/Hebrew.xml"
  
 
 reference_regex = re.compile("(?P<book>([0-9] ?)?[^0-9]*\\S)\\s*(?P<chapter>[0-9]+):(?P<verse>[0-9]+)")
@@ -96,9 +95,9 @@ def getVerse( reference: str ) -> str:
     return verses[ reference_str ] if reference_str in verses else None
 
 
-def getVerse_tokenized( reference: str ) -> str:
+def getVerse_tokenized( reference: str, datafile: str, work_folder: str ) -> str:
     reference_str = translate_reference( reference )
-    verses_tokenized_str = train_tokenization()
+    verses_tokenized_str = get_or_train_tokenization( datafile, work_folder )
     return verses_tokenized_str[reference_str]
 
 
@@ -114,18 +113,17 @@ def translate_reference( reference: str ) -> str:
     return reference_str
 
 
-def load_xml():
-    dir_path = os.path.dirname(os.path.realpath(__file__))
+def load_xml( datafile: str ):
 
     #https://docs.python.org/3/library/xml.etree.elementtree.html
-    tree = ET.parse( os.path.join(dir_path,datafile ) )
+    tree = ET.parse( datafile )
     root = tree.getroot()
     return root
 
 @functools.lru_cache(maxsize=None)
-def load_verses():
+def load_verses( datafile: str ):
     verses = {}
-    root = load_xml()
+    root = load_xml( datafile )
     for seg in root.iter( "seg"):
         concat = []
         for section in seg.findall( "./s" ):
@@ -136,15 +134,14 @@ def load_verses():
 
 
 @functools.lru_cache(maxsize=None)
-def train_tokenization():
+def get_or_train_tokenization( datafile: str, work_folder: str ):
     #first dump the verses to a file to train on.
-    current_folder = os.path.dirname(os.path.abspath(__file__))
-    dump_file = os.path.join( current_folder, "pre_tokenizer_dump.txt")
-    tokenizer_file = os.path.join( current_folder, "bpeTokenizer.json")
-    tokenized_verses_file = os.path.join( current_folder, "tokenized.json")
+    dump_file = os.path.join( work_folder, "pre_tokenizer_dump.txt")
+    tokenizer_file = os.path.join( work_folder, "bpeTokenizer.json")
+    tokenized_verses_file = os.path.join( work_folder, "tokenized.json")
 
     if not os.path.exists(dump_file):
-        verses = load_verses()
+        verses = load_verses( datafile )
         with open( dump_file, "wt" ) as f:
             for verse in verses.values():
                 f.write( verse + "\n" )
