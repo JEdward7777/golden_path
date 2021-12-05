@@ -1,0 +1,3 @@
+[submodule "golden_path/f7_AI_components/f8_AI_Solution_X/joeynmt"]
+	path = golden_path/f7_AI_components/f8_AI_Solution_X/joeynmt
+	url = https://github.com/joeynmt/joeynmt.git
