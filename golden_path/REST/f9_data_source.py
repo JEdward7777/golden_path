@@ -21,6 +21,10 @@ def getVerse_tokenized():
 
     return jsonify(result)
 
+@app.route("/get_verse_references" )
+def getVerseReferences():
+    references = abs.getVerseReferences()
+    return jsonify(references)
 
 def run():
     app.run()

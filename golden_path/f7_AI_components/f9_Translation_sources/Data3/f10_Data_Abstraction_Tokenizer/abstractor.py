@@ -22,5 +22,15 @@ def getVerse_tokenized( reference: str ) -> str:
     verses_tokenized_str = common_data_tools.get_or_train_tokenization( abs_datafile, work_folder )
     return verses_tokenized_str[reference_str]
 
+def getVerseReferences() -> str:
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    abs_datafile = os.path.join(dir_path,datafile )
+
+    #where to place intermediate files.
+    work_folder = os.path.dirname(os.path.abspath(__file__))
+
+    verses_tokenized_str = common_data_tools.get_or_train_tokenization( abs_datafile, work_folder )
+    return list(verses_tokenized_str.keys())
+
 
 if __name__ == '__main__': print( getVerse_tokenized( "John 3:16") )
