@@ -86,6 +86,9 @@ book_name_lookup = {
     "Revelation":"REV"
 }
 
+book_name_lookup_reverse = { v:k for (k,v) in book_name_lookup.items() }
+
+
 """
 This gets the verse from this data source.  It returns untokenized scripture reference for the tokenizer to tokenize.
 """
@@ -111,6 +114,13 @@ def translate_reference( reference: str ) -> str:
     book = book_name_lookup[book]
     reference_str = "b." + book + "." + chapter + "." + verse
     return reference_str
+
+def back_translate_reference( reference_str: str ) -> str:
+    book, chapter, verse = reference_str.split( "." )[-3:]
+    if not book in book_name_lookup_reverse: return None
+    book = book_name_lookup_reverse[book]
+    return f"{book} {chapter}:{verse}"
+
 
 
 def load_xml( datafile: str ):
