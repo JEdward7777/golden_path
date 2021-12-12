@@ -1,4 +1,6 @@
-from flask import Flask
+import f7_AI_components.f9_Translation_sources.Data1.f10_Data_Abstraction_Tokenizer.abstractor as abs
+from flask import Flask, jsonify, request
+import sys
 
 app = Flask(__name__)
 
@@ -8,5 +10,17 @@ def hello_world():
   return "Hello, World!"
 
 
-if __name__ == '__main__':
+@app.route("/get_tokenized_verse" )
+def getVerse_tokenized():
+    reference = request.args.get('ref')
+
+    try:
+        result = abs.getVerse_tokenized( reference )
+    except KeyError:
+        result = { "error":"Not found", "ref":reference }
+
+    return jsonify(result)
+
+
+def run():
     app.run()
