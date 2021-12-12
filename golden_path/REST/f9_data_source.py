@@ -35,4 +35,4 @@ def getVerseReferences():
 
 def run( data_source_n=1 ):
     selected_data_source[0] = int(data_source_n)
-    app.run()
+    app.run( host="0.0.0.0" )

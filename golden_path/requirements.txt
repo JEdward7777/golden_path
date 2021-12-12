@@ -1,1 +1,2 @@
 tokenizers==0.10.3
+Flask==2.0.2
