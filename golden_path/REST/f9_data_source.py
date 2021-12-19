@@ -4,7 +4,7 @@ import f7_AI_components.f9_Translation_sources.Data3.f10_Data_Abstraction_Tokeni
 
 abs = [abs1,abs2,abs3]
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 import sys
 
 app = Flask(__name__)
@@ -14,7 +14,8 @@ selected_data_source = [1]
 
 @app.route("/")
 def index():
-  return f"f9_data_source {selected_data_source[0]} running"
+  #return f"f9_data_source {selected_data_source[0]} running"
+  return send_from_directory( '.', 'index.html' )
 
 
 @app.route("/get_tokenized_verse" )
