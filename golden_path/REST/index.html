@@ -1,9 +1,88 @@
 
 <html>
     <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     
+    <style>
+        .ref {
+            display:inline-block;
+            border: solid 1px;
+            padding: 5px;
+            margin: 5px;
+            margin-top:5px;
+            border-radius: 5px;
+            box-shadow: 2px 3px 3px gray;
+        }
+
+        .token_code{
+            display:inline-block;
+            border: solid 1px;
+            padding: 5px;
+            margin: 5px;
+            margin-top:5px;
+            border-radius: 5px;
+            box-shadow: 2px 3px 3px gray;
+        }
+
+        .token{
+            padding: 5px;
+            margin: 5px;
+            display:inline-block;
+            background-color: coral;
+            border-radius: 5px;
+            box-shadow: 2px 3px 3px gray;
+        }
+        .code{
+            padding: 5px;
+            margin: 5px;
+            display:inline-block;
+            background-color: rgb(70, 194, 224);
+            border-radius: 5px;
+            box-shadow: 2px 3px 3px gray;
+        }
+    </style>
     </head>
     <body>
-        Hello World
+        <button onclick="load_references();">Index</button>
+
+        <div id="show_div"></div>
+
+        <script>
+            function load_references(){
+
+                $.ajax({url: "get_verse_references", success: function(verses_references){
+                    $("#show_div").html('');
+                    $.each( verses_references, function( index, value ){
+                        $("#show_div").append(
+                            '<div class="ref" onclick="show_verse(\'' + value + '\');">' + value + '</div>'
+                        );
+                    })
+                }});
+            }
+            function show_verse( reference ){
+                $.ajax({url: "get_tokenized_verse?ref=" + reference, success: function(tokens){
+                    $("#show_div").html('');
+
+
+                    for( var i = 0; i < tokens[0].length; ++i ){
+                        var token = tokens[0][i];
+                        var code = tokens[1][i];
+                        $("#show_div").append(
+                            '<div class="token_code">\n' +
+                            '  <div class="token">' + token + '</div>\n' +
+                            '  <div class="code">' + code + '</div>\n' +
+                            '</div>\n'
+                        );
+                    }
+                    // $.each( verses_references, function( index, value ){
+                    //     $("#show_div").append(
+                    //         '<div class="ref" onclick="show_verse(\'' + value + '\');">' + value + '</div>'
+                    //     )
+                    // })
+                    //$("#show_div").html( result );
+                }});
+            }
+
+        </script>
     </body>
 </html>
